@@ -6,6 +6,7 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -23,7 +24,8 @@ public class TimeTrackingService extends IntentService {
 	// Dump to persistant store after this recordings of pkg use count.
 	public static final int PERSISTANT_DUMP_INTERVAL_IN_RECORDING_UNITS = 256;
 	// Map of Package name to count of seconds for which app has been used.
-	private static HashMap<String, Integer> pkgUseCount = new HashMap<String, Integer>(100);
+	private static HashMap<String, Integer> pkgUseCount =
+	 	new HashMap<String, Integer>(100);
 
 	SharedPreferences pkgCountPersistantStore = null;
 
@@ -59,7 +61,7 @@ public class TimeTrackingService extends IntentService {
 				pkgUseCount.put(value, currentUse.intValue() + 1);
 			}
 			Log.i(TAG, "" + value);
-			SystemClock.sleep(1000);
+			SystemClock.sleep(SLEEP_TIME_IN_MILLISECONDS);
 
 			if ( (dump_count & PERSISTANT_DUMP_INTERVAL_IN_RECORDING_UNITS) == 0) {
 				dumpToPersistantStore();
@@ -71,16 +73,7 @@ public class TimeTrackingService extends IntentService {
 		return pkgUseCount;
 	}
 
-	private String getCurrentlyUsedPackage() {
-		ActivityManager mActivityManager =
-		 	(ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-		List<ActivityManager.RunningTaskInfo> RunningTask =
-		 	mActivityManager.getRunningTasks(1);
-		ActivityManager.RunningTaskInfo ar = RunningTask.get(0);
-		return ar.topActivity.getPackageName().toString();
-	}
-
-	public void dumpToPersistantStore() {
+	private void dumpToPersistantStore() {
 		Log.d(TAG, "Dumping to persistant storage.");
 		SharedPreferences.Editor editor = pkgCountPersistantStore.edit();
 		if (pkgUseCount != null) {
@@ -89,5 +82,14 @@ public class TimeTrackingService extends IntentService {
 			}
 		}
 		editor.commit();
+	}
+
+	private String getCurrentlyUsedPackage() {
+		ActivityManager mActivityManager =
+		 	(ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+		List<ActivityManager.RunningTaskInfo> RunningTask =
+		 	mActivityManager.getRunningTasks(1);
+		ActivityManager.RunningTaskInfo ar = RunningTask.get(0);
+		return ar.topActivity.getPackageName().toString();
 	}
 }
