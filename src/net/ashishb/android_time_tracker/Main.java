@@ -51,6 +51,7 @@ public class Main extends ListActivity
 		public void onResume() {
 			super.onResume();
 			String launcherPackageName = this.getLauncherPackageName();
+      String packageName = this.getApplicationContext().getPackageName();
 			listView = getListView();
 			listView.setTextFilterEnabled(true);
 			Set< Entry<String, Integer> > values = 
@@ -76,7 +77,8 @@ public class Main extends ListActivity
 			Iterator<Entry<String, Integer>> iterator = sortedSet.iterator();
 			while (iterator.hasNext()) {
 				Entry<String, Integer> entry = iterator.next();
-				if (!entry.getKey().equals(launcherPackageName)) {
+				if (!entry.getKey().equals(launcherPackageName) &&
+            !entry.getKey().equals(packageName)) {
 					sum += entry.getValue();
 				}
 			}
@@ -84,7 +86,10 @@ public class Main extends ListActivity
 			Iterator<Entry<String, Integer>> iterator2 = sortedSet.iterator();
 			while (iterator2.hasNext()) {
 				Entry<String, Integer> entry = iterator2.next();
-				if (!entry.getKey().equals(launcherPackageName)) {
+        // Ignore Launcher app.
+        // Ignore the time tracker app.
+				if (!entry.getKey().equals(launcherPackageName) &&
+            !entry.getKey().equals(packageName))  {
 					double value = (double)entry.getValue()/sum;
 					if (value > 0.01) {
 						try {
