@@ -21,8 +21,8 @@ public class TimeTrackingService extends IntentService {
 	public static final String TAG = "AndroidTimeTracker";
   // Change it to 10 seconds for the release.
 	public static final int SLEEP_TIME_IN_MILLISECONDS = 1000;
-	// Dump to persistant store after this recordings of pkg use count.
-	public static final int PERSISTANT_DUMP_INTERVAL_IN_RECORDING_UNITS = 256;
+	// Dump to persistant store after this many recordings of pkg use count.
+	public static final int PERSISTANT_DUMP_INTERVAL_IN_RECORDING_UNITS = 65535;
 	// Map of Package name to count of seconds for which app has been used.
 	private static HashMap<String, Integer> pkgUseCount =
 	 	new HashMap<String, Integer>(100);
